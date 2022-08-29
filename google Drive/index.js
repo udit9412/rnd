@@ -12,7 +12,13 @@ const client_secret = credentials.web.client_secret;
 const redirect_uris = credentials.web.redirect_uris;
 const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-const SCOPE = ['https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file']
+const SCOPEDrive = ['https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file']
+// const SCOPEGmail = ['https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.insert https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.metadata https://www.googleapis.com/auth/gmail.settings.basic https://www.googleapis.com/auth/gmail.settings.sharing']
+
+// const SCOPE = ['https://www.googleapis.com/auth/contacts']
+
+// const SCOPE = ['https://www.google.com/m8/feeds']
+
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
