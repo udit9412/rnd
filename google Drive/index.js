@@ -12,7 +12,7 @@ const client_secret = credentials.web.client_secret;
 const redirect_uris = credentials.web.redirect_uris;
 const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-const SCOPEDrive = ['https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file']
+const SCOPE = ['https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file https://www.google.com/m8/feeds']
 // const SCOPEGmail = ['https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.insert https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.metadata https://www.googleapis.com/auth/gmail.settings.basic https://www.googleapis.com/auth/gmail.settings.sharing']
 
 // const SCOPE = ['https://www.googleapis.com/auth/contacts']
@@ -144,6 +144,117 @@ app.post('/download/:id', (req, res) => {
         });
 
 });
+
+app.post('/getContacts', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    const people = google.people({ version: 'v1', auth: oAuth2Client });
+    const { data: groups } = await people.people.connections.list({
+        personFields: ['names', 'emailAddresses', 'phoneNumbers'],
+        resourceName: 'people/me',
+        pageSize: 300,
+    });
+    res.send(groups)
+})
+
+
+app.post('/cretaeContact', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    const people = google.people({ version: 'v1', auth: oAuth2Client });
+    const { data: newContact } = await people.people.createContact({
+        requestBody: {
+            emailAddresses: [{ value: 'sriman@kotaru.com' }],
+            names: [
+                {
+                    displayName: 'Sriman Kotaru',
+                    familyName: 'Doe',
+                    givenName: 'John',
+                },
+            ],
+            phoneNumbers: [
+                {
+                    "value": "+91 96528 76646",
+                    "canonicalForm": "+919652876646",
+                    "type": "mobile",
+                    "formattedType": "Mobile"
+                }
+            ]
+        },
+    });
+    res.send(newContact)
+})
+
+
+
+app.post('/cretaeContact', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    const people = google.people({ version: 'v1', auth: oAuth2Client });
+    const { data: newContact } = await people.people.createContact({
+        requestBody: {
+            emailAddresses: [{ value: 'sriman@kotaru.com' }],
+            names: [
+                {
+                    displayName: 'Sriman Kotaru',
+                    familyName: 'Doe',
+                    givenName: 'John',
+                },
+            ],
+            phoneNumbers: [
+                {
+                    "value": "+91 96528 76646",
+                    "canonicalForm": "+919652876646",
+                    "type": "mobile",
+                    "formattedType": "Mobile"
+                }
+            ]
+        },
+    });
+    res.send(newContact)
+})
+
+
+
+app.post('/updateContact', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    const people = google.people({ version: 'v1', auth: oAuth2Client });
+    const { data: newContact } = await people.people.updateContact({
+        resourceName: "people/c9220907275549267803",
+        personFields: "phoneNumbers",
+        updatePersonFields: "phoneNumbers",
+        resource: {
+            // Person.metadata.sources.etag
+            "etag": "%EgkBAgkLLjc9Pj8aBAECBQciDGJHdG0xWDVXUUlBPQ==",
+            phoneNumbers: [
+                {
+                    value: "+92 318 7649 354",
+                    type: "home",
+                },
+            ],
+        },
+    })
+    res.send(newContact)
+})
+
+
+app.post('/deleteContact', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    const people = google.people({ version: 'v1', auth: oAuth2Client });
+    const { data: newContact } = await people.people.updateContact({
+        resourceName: "people/c9220907275549267803",
+        personFields: "phoneNumbers",
+        updatePersonFields: "phoneNumbers",
+        resource: {
+            // Person.metadata.sources.etag
+            "etag": "%EgkBAgkLLjc9Pj8aBAECBQciDGJHdG0xWDVXUUlBPQ==",
+            phoneNumbers: [
+                {
+                    value: "+92 318 7649 354",
+                    type: "home",
+                },
+            ],
+        },
+    })
+    res.send(newContact)
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server Started ${PORT}`));
