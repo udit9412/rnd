@@ -1,8 +1,15 @@
+// const inspector = require('@inspector-apm/inspector-nodejs')({
+//     ingestionKey: '79dfd0c3fd88a43b4ff97b8c2903679d8fe09012',
+// })
 const express = require('express');
 const app = express();
+// app.use(inspector.expressMiddleware())
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { google } = require('googleapis');
+const MailComposer = require('nodemailer/lib/mail-composer');
+
+
 const fs = require("fs");
 const formidable = require('formidable');
 const credentials = require('./credentials.json');
@@ -12,13 +19,14 @@ const client_secret = credentials.web.client_secret;
 const redirect_uris = credentials.web.redirect_uris;
 const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-const SCOPE = ['https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file https://www.google.com/m8/feeds']
+// const SCOPE = ['https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file https://www.google.com/m8/feeds']
 // const SCOPEGmail = ['https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.insert https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.metadata https://www.googleapis.com/auth/gmail.settings.basic https://www.googleapis.com/auth/gmail.settings.sharing']
 
 // const SCOPE = ['https://www.googleapis.com/auth/contacts']
 
 // const SCOPE = ['https://www.google.com/m8/feeds']
 
+const SCOPE = ['https://mail.google.com']
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -26,12 +34,47 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => res.send(' API Running'));
 
-app.get('/getAuthURL', (req, res) => {
+app.get('/getAuthURL', async (req, res) => {
+    console.log('çoming here')
+    // const transaction = inspector.startTransaction('getAuthURL')
+    console.log('coming herer')
+    // req.inspector.addSegment(() => {
+    //     console.log('Adding Segment')
+    // }, 'testing segment')
+    req.inspector.addSegment(() => {
+
+        // Your statements here...
+
+        return 'Hello'
+
+    }, 'csv-export', 'testing').then(() => {
+        console.log('Executoiing ')
+    })
+    req.inspector.addSegment(() => {
+
+        // Your statements here...
+
+        return 'Hello'
+
+    }, 'csv-export', 'testing1').then(() => {
+        console.log('Executoiing ')
+    })
+    req.inspector.addSegment(() => {
+
+        // Your statements here...
+
+        return 'Hello'
+
+    }, 'csv-export', 'testing2').then(() => {
+        console.log('Executoiing ')
+    })
+    console.log('coming herer')
     const authUrl = oAuth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPE,
     });
     console.log(authUrl);
+    // transaction.end()
     return res.send(authUrl);
 });
 
@@ -256,5 +299,75 @@ app.post('/deleteContact', async (req, res) => {
     res.send(newContact)
 })
 
+const createMail = async (options) => {
+    const mailComposer = new MailComposer(options);
+    const message = await mailComposer.compile().build();
+    return encodeMessage(message);
+};
+const encodeMessage = (message) => {
+    return Buffer.from(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+app.post('/sendEmail', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    console.log('coming herer')
+    const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+    const fileAttachments = [
+        {
+            filename: 'attachment1.txt',
+            content: 'This is a plain text file sent as an attachment',
+        },
+        // {
+        //     // path: path.join(__dirname, './attachment2.txt'),
+        // },
+        {
+            filename: 'websites.pdf',
+            path: 'https://www.labnol.org/files/cool-websites.pdf',
+        },
+
+        // {
+        //     filename: 'image.png',
+        //     content: fs.createReadStream(path.join(__dirname, './attach.png')),
+        // },
+    ];
+    const options = {
+        to: 'me@karthik.bio',
+        cc: ['karthik.minnikanti@transcendsoftware.com', 'udit@pipeclose.com'],
+        replyTo: 'amit@labnol.org',
+        subject: 'Hello Amit 🚀',
+        text: 'This email is sent from the command line',
+        html: `<p>🙋🏻‍♀️  &mdash; This is a <b>test email</b> from <a href="https://digitalinspiration.com">Digital Inspiration</a>.</p>`,
+        // attachments: fileAttachments,
+        textEncoding: 'base64',
+        headers: [
+            { key: 'X-Application-Developer', value: 'Amit Agarwal' },
+            { key: 'X-Application-Version', value: 'v1.0.0.2' },
+        ],
+    };
+
+    const rawMessage = await createMail(options);
+    const data = await gmail.users.messages.send({
+        userId: 'me',
+        resource: {
+            raw: rawMessage,
+        },
+    });
+
+
+    res.status(200).send(data)
+})
+
+app.post('/getInboxMessages', async (req, res) => {
+    oAuth2Client.setCredentials(req.body.token);
+    console.log('coming herer')
+    const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+    const data = await gmail.users.messages.list({ userId: 'me' })
+    console.log(data)
+    res.send(data)
+})
+
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server Started ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server Started ${PORT}`)
+});
