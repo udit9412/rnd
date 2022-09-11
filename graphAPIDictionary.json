@@ -1,0 +1,80 @@
+{
+	"userProfile": {
+		"url": "https://graph.microsoft.com/v1.0/me",
+		"method": "get"
+	},
+	"profilePhoto": {
+		"url": "https://graph.microsoft.com/v1.0/me/photo/$value",
+		"method": "get"
+	},
+	"getAllDriveItems": {
+		"url": "https://graph.microsoft.com/v1.0/me/drive/root/children",
+		"method": "get"
+	},
+	"getAllMyMail": {
+		"url": "https://graph.microsoft.com/v1.0/me/messages",
+		"method": "get"
+	},
+	"getAllMyContacts": {
+		"url": "https://graph.microsoft.com/v1.0/me/contacts",
+		"method": "get"
+	},
+	"getAllMyCalenderEvents": {
+		"url": "https://graph.microsoft.com/v1.0/me/events",
+		"method": "get",
+		"selectAllowed": [
+			"subject",
+			"body",
+			"bodyPreview",
+			"organizer",
+			"attendees",
+			"start",
+			"end",
+			"location"
+		]
+	},
+	"getMyCalendars": {
+		"url": "https://graph.microsoft.com/v1.0/me/calendars",
+		"method": "get"
+	},
+	"addNewCalendar": {
+		"url": "https://graph.microsoft.com/v1.0/me/calendars",
+		"method": "post",
+		"bodySchema": [{ "param": "name", "required": true }]
+	},
+	"updateACalendar": {},
+	"deleteACalendar": {},
+	"getMyCalendarsEvents": {
+		"url": "https://graph.microsoft.com/v1.0/me/calendars/%s/events",
+		"method": "get",
+		"urlParamsRequired": ["id"]
+	},
+	"addNewCalendarEvent": {
+		"url": "https://graph.microsoft.com/v1.0/me/calendars/%s/events",
+		"method": "post",
+		"bodySchema": [
+			{ "param": "subject", "required": true },
+			{ "param": "body", "required": true },
+			{ "param": "start", "required": true },
+			{ "param": "end", "required": true },
+			{ "param": "location", "required": true },
+			{ "param": "attendees", "required": true },
+			{ "param": "transactionId", "required": true }
+		],
+		"urlParamsRequired": ["id"]
+	},
+	"updateCalendarEvent": {},
+	"deleteCalendarEvent": {},
+	"cancelCalendarEvent": {},
+	"acceptCalendarEvent": {},
+	"declineCalendarEvent": {},
+	"tentativeAcceptEvent": {},
+	"listMyCalendarEventAttachments": {},
+	"addMyCalendarEventAttachments": {},
+	"deleteMyCalendarEventAttachments": {},
+	"listAllContacts": {},
+	"createNewContact": {},
+	"getContactDetails": {},
+	"updateContactDetails": {},
+	"deleteContact": {}
+}

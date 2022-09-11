@@ -1,0 +1,24 @@
+{
+  "name": "outlook-integration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/identity": "^2.1.0",
+    "@microsoft/microsoft-graph-client": "^3.0.2",
+    "axios": "^0.27.2",
+    "express": "^4.18.1",
+    "isomorphic-fetch": "^3.0.0",
+    "qs": "^6.11.0",
+    "readline-sync": "^1.4.10",
+    "sprintf-js": "^1.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
